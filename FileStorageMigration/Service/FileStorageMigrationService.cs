@@ -30,15 +30,17 @@ namespace FileStorageMigration.Service
             using var fileStorageContext = new FileStorageDbContext(_connectionStrings.FileStorageDataContext);
             using var webApiContext = new WebApiDbContext(_connectionStrings.WebApiDataContext);
 
-            Console.WriteLine("");
-            Console.WriteLine("Files:");
-
             var sha = new SHA256Managed();
 
             var isReplaceRequired = !_migrationSettings.SourcePath.Equals(_migrationSettings.DestinationPath);
 
+            var countFile = 1;
+
             await SearchFilesAsync(_migrationSettings.SourcePath, async (filePath, fileName) =>
             {
+                Console.Clear();
+                Console.WriteLine($"{filePath}, {fileName}, [{countFile}]");
+
                 var uuid = await FileCreatorService.CreateAsync(new FileCreateInfo()
                 {
                     FileName = fileName,
