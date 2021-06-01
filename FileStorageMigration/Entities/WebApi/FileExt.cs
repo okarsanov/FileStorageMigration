@@ -5,10 +5,11 @@ namespace FileStorageMigration.Entities.WebApi
     [Table("FileExt")]
     public class FileExt
     {
+        public int ID { get; set; }
+        public bool Hidden { get; set; }
         public string SedkpIdentity { get; set; }
-        public string FullPath { get; set; }
-        public string FileName { get; set; }
         public string FileLink { get; set; }
         public int FileItemId { get; set; }
+        public int DriveId { get; set; }
     }
 }

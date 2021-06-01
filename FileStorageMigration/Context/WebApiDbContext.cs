@@ -12,7 +12,14 @@ namespace FileStorageMigration.Context
         {
             _connectionString = connectionString;
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.HasDefaultSchema("DataMigration");
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql(_connectionString);
+        {
+            optionsBuilder.UseNpgsql(_connectionString);
+        }
     }
 }

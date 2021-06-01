@@ -1,6 +1,8 @@
-﻿using FileStorageMigration.Model;
+﻿using FileStorageMigration.Model.Options;
 using FileStorageMigration.Service;
+using FileStorageMigration.Service.FileStorage;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -8,19 +10,36 @@ namespace FileStorageMigration
 {
     class Program
     {
-        static IConfiguration configuration;
+        private static DependencyInjectionContainer dic;
 
-        static async Task Main(string[] args)
+        private static void DICCreate()
         {
-            configuration = new ConfigurationBuilder()
+            dic = new DependencyInjectionContainer();
+            var services = dic.Services;
+
+            var configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", false)
                     .Build();
 
-            var migrationSettings = configuration.GetSection(nameof(MigrationSettings)).Get<MigrationSettings>();
-            var connectionStrings = configuration.GetSection(nameof(ConnectionStrings)).Get<ConnectionStrings>();
+            services.AddSingleton(configuration);
 
-            var fileStorageMigration = new FileStorageMigrationService(migrationSettings, connectionStrings);
+            services.Configure<MigrationOptions>(configuration.GetSection("MigrationOptions"));
+            services.Configure<ConnectionStrings>(configuration.GetSection("ConnectionStrings"));
+
+            services.AddSingleton<FileStorageMigrationService>();
+            services.AddSingleton<FileStorageService>();
+            services.AddSingleton<FileCreatorService>();
+            services.AddSingleton<WebApiService>();
+
+            dic.Create();
+        }
+
+        static async Task Main(string[] args)
+        {
+            DICCreate();
+
+            var fileStorageMigration = dic.Get<FileStorageMigrationService>();
 
             await fileStorageMigration.StartAsync();
         }
