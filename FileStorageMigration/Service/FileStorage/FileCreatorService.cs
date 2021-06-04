@@ -9,7 +9,6 @@ namespace FileStorageMigration.Service.FileStorage
 {
     public class FileCreateInfo
     {
-        public string FileName { get; set; }
         public string FilePath { get; set; }
         public DriveItemEntity Directory { get; set; }
     }
@@ -18,47 +17,47 @@ namespace FileStorageMigration.Service.FileStorage
     {
         private readonly FileStorageService _fileStorageService;
         private readonly WebApiService _webApiService;
-
+        private readonly PropertiesEncoderService _encoder;
         public FileCreatorService(
             FileStorageService fileStorageService,
-            WebApiService webApiService
+            WebApiService webApiService,
+            PropertiesEncoderService encoder
             )
         {
             _fileStorageService = fileStorageService;
             _webApiService = webApiService;
+            _encoder = encoder;
         }
 
         public async Task<string> CreateAsync(FileCreateInfo f)
         {
-            var fileNameWithoutExtension = f.FileName.Split('.').First();
-
             var fileInfo = new FileInfo(f.FilePath);
+            var fileNameWithoutExtension = fileInfo.Name.Split('.').First();
 
             var uuid = Guid.TryParse(fileNameWithoutExtension, out var guid) ? guid : Guid.NewGuid();
 
             var file = await _fileStorageService.CreateFileAsync(uuid, fileInfo, f.Directory);
 
-            var link = CreateLink(file.DriveId, file.Id);
+            var link = CreateLink(file);
             await _webApiService.CreateFileExtAsync(fileNameWithoutExtension, file, link);
 
             return uuid.ToString();
         }
 
-        string CreateLink(int driveId, int itemId)
+        string CreateLink(DriveItemEntity driveItemEntity)
         {
             var properties = new Properties();
 
             var link = new LinkProperties(properties)
             {
-                CheckPermission = true,
+                CheckPermission = false,
                 Type = LinkType.ByItemIdAndDriveId,
-                DriveId = driveId,
-                ItemId = itemId,
+                DriveId = driveItemEntity.DriveId,
+                ItemId = driveItemEntity.Id,
                 ShareLinkCounter = 1
             };
 
-            var encoder = new PropertiesEncoderService("test_key");
-            return encoder.Encode(properties);
+            return _encoder.Encode(properties);
         }
     }
 }

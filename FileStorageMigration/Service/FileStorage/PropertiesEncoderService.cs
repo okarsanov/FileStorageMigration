@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security;
 using System.Security.Cryptography;
@@ -13,8 +14,9 @@ namespace FileStorageMigration.Service.FileStorage
     {
         private readonly byte[] _key;
 
-        public PropertiesEncoderService(string key)
+        public PropertiesEncoderService()
         {
+            var key = "test_key";
             using (var shA256 = new SHA256Managed())
             {
                 _key = shA256.ComputeHash(Encoding.UTF8.GetBytes(key));

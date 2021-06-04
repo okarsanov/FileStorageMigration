@@ -53,10 +53,14 @@ namespace FileStorageMigration.Service.FileStorage
         {
             var dtn = DateTime.Now;
 
+            var fullPath = name + "\\";
+            if (parentDirectory != null)
+                fullPath = Path.Combine(parentDirectory.FullPath, name) + "\\";
+
             var directory = new DriveItemEntity()
             {
                 Name = name,
-                FullPath = Path.Combine(parentDirectory?.FullPath ?? string.Empty, name.Trim('\\').Trim('/'), "/"),
+                FullPath = fullPath,
 
                 DriveId = _migrationOptions.DestinationDriveId,
                 DirectoryId = parentDirectory?.Id ?? null,
@@ -98,12 +102,9 @@ namespace FileStorageMigration.Service.FileStorage
 
             var name = fileInfo.Name;
 
-            var trimParentDirectory = parentDirectory.FullPath.Trim('/');
-            trimParentDirectory = trimParentDirectory.Length == 0 ? string.Empty : trimParentDirectory + "/";
-
-            var fullPath = parentDirectory != null
-                ? $"{trimParentDirectory}{name}/"
-                : $"{name}/";
+            var fullPath = name + "\\";
+            if (parentDirectory != null)
+                fullPath = Path.Combine(parentDirectory.FullPath, name) + "\\";
 
             var file = new DriveItemEntity()
             {

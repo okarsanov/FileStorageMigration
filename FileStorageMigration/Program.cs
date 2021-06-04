@@ -31,6 +31,7 @@ namespace FileStorageMigration
             services.AddSingleton<FileStorageService>();
             services.AddSingleton<FileCreatorService>();
             services.AddSingleton<WebApiService>();
+            services.AddSingleton<PropertiesEncoderService>();
 
             dic.Create();
         }

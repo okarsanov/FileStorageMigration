@@ -21,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="appsettings_linux.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="appsettings_linux_replace.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

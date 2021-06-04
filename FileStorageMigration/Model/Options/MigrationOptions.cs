@@ -2,10 +2,10 @@
 {
     public class MigrationOptions
     {
-        public string StoreSourceRootPath { get; set; }
-        public string SourceDirectoryName { get; set; }
-        public string DestinationPath { get; set; }
-        public string DirectoryFullPath { get; set; }
+        public string AbsouluteSourceRootPath { get; set; }
+        public string AbsouluteDestinationRootPath { get; set; }
+        public string RelativeSourceDirectoryName { get; set; }
+        public string RelativeDestinationDirectoryName { get; set; }
         public int DestinationDriveId { get; set; }
         public int DestinationDirectoryId { get; set; }
         public int AdminUserId { get; set; }

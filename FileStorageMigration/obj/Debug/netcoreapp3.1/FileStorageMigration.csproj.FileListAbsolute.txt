@@ -62,3 +62,4 @@ C:\Users\jingo\source\repos\FileStorageMigration\FileStorageMigration\bin\Debug\
 C:\Users\jingo\source\repos\FileStorageMigration\FileStorageMigration\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Users\jingo\source\repos\FileStorageMigration\FileStorageMigration\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\jingo\source\repos\FileStorageMigration\FileStorageMigration\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
+C:\Users\jingo\source\repos\FileStorageMigration\FileStorageMigration\bin\Debug\netcoreapp3.1\appsettings_linux.json

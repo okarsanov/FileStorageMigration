@@ -35,67 +35,63 @@ namespace FileStorageMigration.Service
 
         public async Task StartAsync()
         {
-            var isReplaceRequired = ! Path.Combine(_migrationOptions.StoreSourceRootPath, 
-                _migrationOptions.SourceDirectoryName).Equals(_migrationOptions.DestinationPath);
-
+            var isReplaceRequired = !_migrationOptions.AbsouluteSourceRootPath.Equals(_migrationOptions.AbsouluteDestinationRootPath);
+            
             var countFile = 1;
 
             await SearchFilesAsync(
-                _migrationOptions.StoreSourceRootPath,
-                _migrationOptions.SourceDirectoryName,
+                _migrationOptions.AbsouluteSourceRootPath,
+                _migrationOptions.RelativeDestinationDirectoryName,
                 null,
-                async (filePath, fileName, driveItemEntity) =>
+                async (filePath, driveItemEntity) =>
             {
                 Console.Clear();
-                Console.WriteLine($"{filePath}, {fileName}, [{countFile}]");
+                Console.WriteLine($"{filePath}, [{countFile}]");
 
                 var uuid = await _fileCreatorService.CreateAsync(new FileCreateInfo()
                 {
-                    FileName = fileName,
                     FilePath = filePath,
                     Directory = driveItemEntity
                 });
 
                 if (isReplaceRequired)
                 {
-                    File.Copy(filePath, Path.Combine(_migrationOptions.DestinationPath, uuid));
-                    File.Delete(filePath);
+                    File.Copy(filePath, Path.Combine(_migrationOptions.AbsouluteDestinationRootPath, uuid));
+                    //File.Delete(filePath);
                 }
                 else
                 {
-                    File.Move(filePath, Path.Combine(_migrationOptions.DestinationPath, uuid));
+                    File.Move(filePath, Path.Combine(_migrationOptions.AbsouluteDestinationRootPath, uuid));
                 }
             });
         }
 
         async Task SearchFilesAsync(
-            string rootDirPath,
+            string rootSourceDirPath,
             string directoryName,
             DriveItemEntity parentDirectory,
-            Func<string, string, DriveItemEntity, Task> action)
+            Func<string, DriveItemEntity, Task> action)
         {
             var directory = new DriveItemEntity();
-            var rootDirectoryFullPath = Path.Combine(rootDirPath, directoryName);
-            var directoryFullPath = Path.Combine(parentDirectory?.FullPath ?? string.Empty, directoryName, "/");
 
-            if (!_directoryDictionary.TryGetValue(directoryFullPath, out directory))
+            var directoryFullPath = $"{directoryName}\\";
+            if (parentDirectory != null)
+                directoryFullPath = Path.Combine(parentDirectory.FullPath, directoryName) + "\\";
+
+            directory = await _fileStorageService.GetDirectoryByFullPathAsync(directoryFullPath);
+            if (directory == null)
+                directory = await _fileStorageService.CreateDirectoryAsync(directoryName, parentDirectory);
+
+            foreach (var file in Directory.GetFiles(rootSourceDirPath))
             {
-                directory = await _fileStorageService.GetDirectoryByFullPathAsync(directoryFullPath);
-                if (directory == null)
-                {
-                    directory = await _fileStorageService.CreateDirectoryAsync(directoryName, parentDirectory);
-                    _directoryDictionary.Add(directory.FullPath, directory);
-                }
+                await action(file, directory);
             }
 
-            foreach(var file in Directory.GetFiles(rootDirectoryFullPath))
+            foreach(var dirFullPath in Directory.GetDirectories(rootSourceDirPath))
             {
-                await action(file, file.Split("\\").Last(), directory);
-            }
+                var dirName = dirFullPath.Split(Path.DirectorySeparatorChar).Last();
 
-            foreach(var dir in Directory.GetDirectories(rootDirectoryFullPath))
-            {
-                await SearchFilesAsync(rootDirectoryFullPath, dir, directory, action);
+                await SearchFilesAsync(dirFullPath, dirName, directory, action);
             }
         }
     }
