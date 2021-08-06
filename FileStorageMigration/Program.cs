@@ -1,8 +1,10 @@
-﻿using FileStorageMigration.Model.Options;
+﻿using FileStorageMigration.Helpers;
+using FileStorageMigration.Model.Options;
 using FileStorageMigration.Service;
 using FileStorageMigration.Service.FileStorage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -42,7 +44,14 @@ namespace FileStorageMigration
 
             var fileStorageMigration = dic.Get<FileStorageMigrationService>();
 
-            await fileStorageMigration.StartAsync();
+            try
+            {
+                await fileStorageMigration.StartAsync();
+            }
+            catch(Exception e)
+            {
+                LoggerHelper.LogError($"Unhandled exception", e);
+            }
         }
     }
 }

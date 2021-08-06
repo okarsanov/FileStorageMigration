@@ -9,5 +9,6 @@
         public int DestinationDriveId { get; set; }
         public int DestinationDirectoryId { get; set; }
         public int AdminUserId { get; set; }
+        public bool IsRemoveSourceFiles { get; set; } = false;
     }
 }

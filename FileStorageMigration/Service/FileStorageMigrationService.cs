@@ -1,4 +1,5 @@
 ﻿using FileStorageMigration.Entities.FileStorage;
+using FileStorageMigration.Helpers;
 using FileStorageMigration.Model.Options;
 using FileStorageMigration.Service.FileStorage;
 using Microsoft.Extensions.Options;
@@ -48,20 +49,27 @@ namespace FileStorageMigration.Service
                 Console.Clear();
                 Console.WriteLine($"{filePath}, [{countFile}]");
 
-                var uuid = await _fileCreatorService.CreateAsync(new FileCreateInfo()
+                try
                 {
-                    FilePath = filePath,
-                    Directory = driveItemEntity
-                });
+                    var uuid = await _fileCreatorService.CreateAsync(new FileCreateInfo()
+                    {
+                        FilePath = filePath,
+                        Directory = driveItemEntity
+                    });
 
-                if (isReplaceRequired)
-                {
-                    File.Copy(filePath, Path.Combine(_migrationOptions.AbsouluteDestinationRootPath, uuid));
-                    //File.Delete(filePath);
+                    if (isReplaceRequired)
+                        File.Copy(filePath, Path.Combine(_migrationOptions.AbsouluteDestinationRootPath, uuid));
+                    else
+                        File.Move(filePath, Path.Combine(_migrationOptions.AbsouluteDestinationRootPath, uuid));
+
+                    if (_migrationOptions.IsRemoveSourceFiles && File.Exists(filePath))
+                        File.Delete(filePath);
+
+                    countFile++;
                 }
-                else
+                catch(Exception e)
                 {
-                    File.Move(filePath, Path.Combine(_migrationOptions.AbsouluteDestinationRootPath, uuid));
+                    LoggerHelper.LogError($"Processing file '{filePath}'", e);
                 }
             });
         }
