@@ -1,29 +1,33 @@
-﻿Установка и запуск приложения
+﻿<h2>Установка и запуск приложения</h2>
 
-Зайти в приложение filestorage в kubernetes
+<h4>Зайти в приложение filestorage в kubernetes</h4>
 
-1. Установить git
+Тестовый стенд: `https://kubeboard.npc.ba/#/shell/ros-patent-test/visary-filestorage-ros-patent-test-85468897f-jl88t/visary-filestorage?namespace=ros-patent-test`
 
-apt-get update
-apt-get install git
+<h4>1. Установить git</h4>
 
-2. Клонировать утилиту FileStorageMigration
+`apt-get update`
 
-git clone https://github.com/JingoC/FileStorageMigration
+`apt-get install git`
 
-3. Дать права клонированной директории и запустить инсталлятор
+<h4>2. Клонировать утилиту FileStorageMigration</h4>
 
-chmod -R 777 FileStorageMigration 
-./FileStorageMigration/FileStorageMigration/install_runtime.sh
+`git clone https://github.com/JingoC/FileStorageMigration`
 
-4. Собрать приложение
+<h4>3. Дать права клонированной директории и запустить инсталлятор</h4>
 
-dotnet build FileStorageMigration/FileStorageMigration
+`chmod -R 777 FileStorageMigration`
 
-5. Копировать конфигурационный файл в директорию запуска
+`./FileStorageMigration/FileStorageMigration/install_runtime.sh`
 
-cp FileStorageMigration/FileStorageMigration/appsettings_linux.json FileStorageMigration/FileStorageMigration/bin/Debug/netcoreapp3.1/appsettings.json
+<h4>4. Собрать приложение</h4>
 
-6. Запуск утилиты
+`dotnet build FileStorageMigration/FileStorageMigration`
 
-./FileStorageMigration/FileStorageMigration/bin/Debug/netcoreapp3.1/FileStorageMigration
+<h4>5. Копировать конфигурационный файл в директорию запуска</h4>
+
+`cp FileStorageMigration/FileStorageMigration/appsettings_linux.json FileStorageMigration/FileStorageMigration/bin/Debug/netcoreapp3.1/appsettings.json`
+
+<h4>6. Запуск утилиты</h4>
+
+`./FileStorageMigration/FileStorageMigration/bin/Debug/netcoreapp3.1/FileStorageMigration`
