@@ -15,8 +15,8 @@ namespace FileStorageMigration.Service.FileStorage
 {
     public class FileStorageService
     {
-        private readonly FileStorageDbContext _fileStorageDbContext;
         private readonly MigrationOptions _migrationOptions;
+        private readonly string _connectionString;
 
         readonly SHA256Managed _sha = new SHA256Managed();
 
@@ -26,14 +26,13 @@ namespace FileStorageMigration.Service.FileStorage
             )
         {
             _migrationOptions = migrationOptions.Value;
-
-            _fileStorageDbContext = new FileStorageDbContext(connectionStrings.Value.FileStorageDataContext);
-            
+            _connectionString = connectionStrings.Value.FileStorageDataContext;
         }
 
         public async Task<DriveItemEntity> GetDirectoryByFullPathAsync(string fullPath)
         {
-            var item = await _fileStorageDbContext.DriveItemEntities
+            using var fileStorageDbContext = new FileStorageDbContext(_connectionString);
+            var item = await fileStorageDbContext.DriveItemEntities
                 .Where(x => x.FullPath.Equals(fullPath) && !x.FileInfoId.HasValue)
                 .FirstOrDefaultAsync();
 
@@ -42,7 +41,8 @@ namespace FileStorageMigration.Service.FileStorage
 
         public async Task<DriveItemEntity> GetDirectoryByIdAsync(int directoryId)
         {
-            var item = await _fileStorageDbContext.DriveItemEntities
+            using var fileStorageDbContext = new FileStorageDbContext(_connectionString);
+            var item = await fileStorageDbContext.DriveItemEntities
                 .Where(x => x.Id == directoryId)
                 .FirstOrDefaultAsync();
 
@@ -72,9 +72,10 @@ namespace FileStorageMigration.Service.FileStorage
                 
             };
 
-            await _fileStorageDbContext.DriveItemEntities.AddAsync(directory);
-            await _fileStorageDbContext.SaveChangesAsync();
-
+            using var fileStorageDbContext = new FileStorageDbContext(_connectionString);
+            await fileStorageDbContext.DriveItemEntities.AddAsync(directory);
+            await fileStorageDbContext.SaveChangesAsync();
+            
             return directory;
         }
 
@@ -97,8 +98,8 @@ namespace FileStorageMigration.Service.FileStorage
                 Hash = hash
             };
 
-            await _fileStorageDbContext.FileInfoEntities.AddAsync(fileInfoEntity);
-            await _fileStorageDbContext.SaveChangesAsync();
+            using var fileStorageDbContext = new FileStorageDbContext(_connectionString);
+            await fileStorageDbContext.FileInfoEntities.AddAsync(fileInfoEntity);
 
             var name = fileInfo.Name;
 
@@ -122,8 +123,9 @@ namespace FileStorageMigration.Service.FileStorage
                 ModifyDate = dtn
             };
 
-            await _fileStorageDbContext.DriveItemEntities.AddAsync(file);
-            await _fileStorageDbContext.SaveChangesAsync();
+            await fileStorageDbContext.DriveItemEntities.AddAsync(file);
+
+            await fileStorageDbContext.SaveChangesAsync();
 
             return file;
         }

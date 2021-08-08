@@ -12,7 +12,7 @@ namespace FileStorageMigration.Service.FileStorage
 {
     public class WebApiService
     {
-        private readonly WebApiDbContext _webApiDbContext;
+        private readonly string _connectionString;
 
         readonly SHA256Managed _sha = new SHA256Managed();
 
@@ -20,12 +20,14 @@ namespace FileStorageMigration.Service.FileStorage
             IOptions<ConnectionStrings> connectionStrings
             )
         {
-            _webApiDbContext = new WebApiDbContext(connectionStrings.Value.WebApiDataContext);
+            _connectionString = connectionStrings.Value.WebApiDataContext;
         }
 
         public async Task<FileExt> GetFileExtBySedkpIdentityAsync(string sedkpIdentity)
         {
-            var item = await _webApiDbContext.FilesExt
+            using var webApiDbContext = new WebApiDbContext(_connectionString);
+
+            var item = await webApiDbContext.FilesExt
                 .Where(x => x.SedkpIdentity.Equals(sedkpIdentity))
                 .FirstOrDefaultAsync();
 
@@ -47,8 +49,9 @@ namespace FileStorageMigration.Service.FileStorage
                 Hidden = false
             };
 
-            await _webApiDbContext.FilesExt.AddAsync(fileExt);
-            await _webApiDbContext.SaveChangesAsync();
+            using var webApiDbContext = new WebApiDbContext(_connectionString);
+            await webApiDbContext.FilesExt.AddAsync(fileExt);
+            await webApiDbContext.SaveChangesAsync();
 
             return fileExt;
         }
