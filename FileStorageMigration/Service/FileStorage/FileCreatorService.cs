@@ -38,7 +38,8 @@ namespace FileStorageMigration.Service.FileStorage
 
             var file = await _fileStorageService.CreateFileAsync(uuid, fileInfo, f.Directory);
 
-            var link = CreateLink(file);
+            //var link = CreateLink(file);
+            var link = string.Empty;
             await _webApiService.CreateFileExtAsync(fileNameWithoutExtension, file, link);
 
             return uuid.ToString();

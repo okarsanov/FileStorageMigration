@@ -4,6 +4,7 @@ using FileStorageMigration.Service;
 using FileStorageMigration.Service.FileStorage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Threading.Tasks;

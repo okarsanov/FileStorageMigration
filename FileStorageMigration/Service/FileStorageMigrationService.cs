@@ -3,6 +3,7 @@ using FileStorageMigration.Helpers;
 using FileStorageMigration.Model.Options;
 using FileStorageMigration.Service.FileStorage;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,7 @@ namespace FileStorageMigration.Service
     public class FileStorageMigrationService
     {
         private Dictionary<string, DriveItemEntity> _directoryDictionary = new Dictionary<string, DriveItemEntity>();
+        private int countFile = 1;
 
         private readonly MigrationOptions _migrationOptions;
         private readonly ConnectionStrings _connectionStrings;
@@ -33,13 +35,18 @@ namespace FileStorageMigration.Service
             _fileCreatorService = fileCreatorService;
             _fileStorageService = fileStorageService;
         }
-
+        void PrintOptions()
+        {
+            Console.WriteLine($"Options:{Environment.NewLine}{JsonConvert.SerializeObject(_migrationOptions)}");
+            Console.WriteLine($"{Environment.NewLine}{JsonConvert.SerializeObject(_connectionStrings)}");
+            Console.WriteLine("");
+        }
         public async Task StartAsync()
         {
+            PrintOptions();
+
             var isReplaceRequired = !_migrationOptions.AbsouluteSourceRootPath.Equals(_migrationOptions.AbsouluteDestinationRootPath);
             
-            var countFile = 1;
-
             await SearchFilesAsync(
                 _migrationOptions.AbsouluteSourceRootPath,
                 _migrationOptions.RelativeDestinationDirectoryName,
