@@ -99,7 +99,9 @@ namespace FileStorageMigration.Service.FileStorage
             };
 
             using var fileStorageDbContext = new FileStorageDbContext(_connectionString);
+            
             await fileStorageDbContext.FileInfoEntities.AddAsync(fileInfoEntity);
+            await fileStorageDbContext.SaveChangesAsync();
 
             var name = fileInfo.Name;
 
@@ -124,7 +126,6 @@ namespace FileStorageMigration.Service.FileStorage
             };
 
             await fileStorageDbContext.DriveItemEntities.AddAsync(file);
-
             await fileStorageDbContext.SaveChangesAsync();
 
             return file;

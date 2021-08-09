@@ -10,7 +10,7 @@ namespace FileStorageMigration.Helpers
         public static void LogError(string message, Exception e)
         {
             var dtn = DateTime.Now.Date;
-            var result = $"{message}{Environment.NewLine}{GetError(e)}";
+            var result = $"{Environment.NewLine}{message}{Environment.NewLine}{GetError(e)}";
 
             var fileName = $"error_{dtn.ToString("yyyy_MM_dd")}.log";
 
@@ -22,7 +22,7 @@ namespace FileStorageMigration.Helpers
             if (e == null)
                 return string.Empty;
 
-            var r = $"{e.Message}{Environment.NewLine}--------------------- Stack Trace ---------------------{e.StackTrace}{Environment.NewLine}-------------------------------------------------------";
+            var r = $"{Environment.NewLine}{e.Message}{Environment.NewLine}--------------------- Stack Trace ---------------------{Environment.NewLine}{e.StackTrace}{Environment.NewLine}-------------------------------------------------------";
 
             r += GetError(e.InnerException);
 
