@@ -26,7 +26,7 @@
 
 <h4>5. Копировать конфигурационный файл в директорию запуска</h4>
 
-`cp FileStorageMigration/FileStorageMigration/appsettings_linux.json FileStorageMigration/FileStorageMigration/bin/Debug/netcoreapp3.1/appsettings.json`
+`cp FileStorageMigration/FileStorageMigration/appsettings_linux_replace.json appsettings.json`
 
 <h4>6. Запуск утилиты</h4>
 
